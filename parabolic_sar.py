@@ -33,7 +33,7 @@ def parabolic_sar(bars , step_size =None , max_value=None , start_value=None):
     trend_count += 1  
     sar = min(bar_low[1] , bar_low[0])
     ep = max(bar_high[1] , bar_high[0])
-    a_factor = start_value + abs(trend_count) * step_size
+    a_factor = start_value + abs(trend_count-1) * step_size
 
   elif  bar_high[1] < bar_high[0]:
     trend_count += -1  
