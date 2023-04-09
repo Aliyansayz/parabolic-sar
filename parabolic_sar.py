@@ -50,23 +50,23 @@ def parabolic_sar(bars , step_size =None , max_value=None , start_value=None):
       if  bar_low[n] <  sar_array[n-1]  and trend_count > 0 :  # reversal towards downtrend
         trend_count = 0
         trend_count += -1 
-        sar = max( bar_high[n] , bar_high[n-1] )
+        # fsar = fall_sar( sar_array[n-1]  , a_factor , ep )
+        # sar = max( bar_high[n] , bar_high[n-1] )
         ep = min(bar_low[n] , bar_low[n-1])
-        a_factor = start_value + abs(trend_count-1) * step_size 
+        a_factor = start_value + abs(trend_count-1) * step_size
 
-        reversed_sar = fall_sar(sar , a_factor , ep )
-        
+        reversed_sar = fall_sar(sar_array[n-1] , a_factor , ep )
         sar_array[n] = reversed_sar
         continue
 
       elif   bar_high[n] >  sar_array[n-1]  and trend_count < 0 :  # reversal towards uptrend
         trend_count = 0 
         trend_count += 1 
-        sar = min( bar_low[n] , bar_low[n-1] ) 
+        # sar = min( bar_low[n] , bar_low[n-1] ) 
         ep = max(bar_high[n] , bar_high[n-1]) 
         a_factor = start_value + abs(trend_count-1) * step_size
 
-        reversed_sar = rise_sar(sar , a_factor , ep )
+        reversed_sar = rise_sar(sar_array[n-1] , a_factor , ep )
         sar_array[n] = reversed_sar
         continue
 
@@ -81,13 +81,13 @@ def parabolic_sar(bars , step_size =None , max_value=None , start_value=None):
       else:
         # new_SAR = sar - a_factor (ep - sar)
         fsar = fall_sar(sar , a_factor , ep )
-        sar = np.max(fsar , bar_high[n-1] , bar_high[n-2] )
+        sar = max(fsar , bar_high[n-1] , bar_high[n-2] )
         trend_count += -1
         ep = min(bar_low[n] , bar_low[n-1])
 
       a_factor = start_value + abs(trend_count-1) * step_size
       sar_array[n] = sar
       if a_factor > max_value : # max accelerator 0.2
-        a_factor = max_value
+        a_factor = max_value 
 
   return sar_array      
