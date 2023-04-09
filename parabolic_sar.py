@@ -83,7 +83,7 @@ def parabolic_sar(bars , step_size =None , max_value=None , start_value=None):
         fsar = fall_sar(sar , a_factor , ep )
         sar = np.max(fsar , bar_high[n-1] , bar_high[n-2] )
         trend_count += -1
-        ep = max(bar_high[n] , bar_high[n-1])
+        ep = min(bar_low[n] , bar_low[n-1])
 
       a_factor = start_value + abs(trend_count-1) * step_size
       sar_array[n] = sar
