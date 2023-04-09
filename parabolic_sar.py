@@ -6,11 +6,11 @@ import pandas as pd
 ## PARABOLIC SAR ## 
 def fall_sar(sar , a_factor , ep ):
   
-  return sar - a_factor (ep - sar) 
+  return sar - a_factor* (ep - sar) 
 
 def rise_sar(sar , a_factor , ep ):
 
-  return sar + a_factor (ep - sar) 
+  return sar + a_factor *(ep - sar) 
 
 def parabolic_sar(bars , step_size =None , max_value=None , start_value=None):
   
