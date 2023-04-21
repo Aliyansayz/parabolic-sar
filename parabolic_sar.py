@@ -3,6 +3,7 @@ import numpy as np
 
 def parabolic_sar( bar , step_size = None , max_value = None , start_value = None):
       import numpy as np
+      import math
 
       if not step_size or max_value or start_value:
           step_size= 0.02
@@ -68,7 +69,8 @@ def parabolic_sar( bar , step_size = None , max_value = None , start_value = Non
               a_factor = start_value + multiplier * step_size 
               try:
                   old_sar = sar_array[n-1]
-
+                  if math.isnan(old_sar):
+                       raise ValueError()
               except:
                   old_sar = np.min( ( low[n-period:n-1] ))
 
@@ -82,7 +84,8 @@ def parabolic_sar( bar , step_size = None , max_value = None , start_value = Non
               a_factor = start_value + multiplier * step_size
               try:
                   old_sar = sar_array[n-1]  
-
+                  if math.isnan(old_sar):
+                       raise ValueError()
               except:
                   old_sar = np.max( ( high[n-period:n-1] ))
                                                                                          
