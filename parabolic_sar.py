@@ -1,9 +1,10 @@
 import pandas as pd # optional
 import numpy as np
 
-def parabolic_sar( bar , step_size = None , max_value = None , start_value = None):
+def parabolic_sar( bar , step_size = None ,  start_value = None, max_value = None  ):
       import numpy as np
       import math
+
       if not step_size or max_value or start_value:
           step_size= 0.02
           start_value = 0.02 
@@ -16,13 +17,29 @@ def parabolic_sar( bar , step_size = None , max_value = None , start_value = Non
       period = 5
       sar_array = np.empty_like( high , dtype=np.float16 )
       extreme_point = np.empty_like( high , dtype=np.float16 )
-      extreme_point = np.full( high.shape , np.nan)
-      sar_array = np.full( high.shape , np.nan)
+      a_factor = np.empty_like( high , dtype=np.float16 )
 
-      def trend_now(high,  low, close, period, n):
-        mean =  np.mean( ( high[ n-period:n ] , low[ n-period:n ]  ) )
-        if close[n] > mean : return 1 
+      a_factor = np.full(  high.shape , np.nan )
+      extreme_point = np.full( high.shape , np.nan )
+      sar_array = np.full( high.shape , np.nan )
+
+      def trend_direction(high, low, close, sar_array):
+        if close[n] > sar_array[n-1] or high[n] > sar_array[n-1] : return 1 
+        elif close[n] < sar_array[n-1] or low[n] < sar_array[n-1] : return -1 
+        
+      def trend_now(high ,  low):
+        mean =  np.mean(( high[:4] , low[:4]  ))
+        if close[5] > mean  : return 1 # previous parabolic sar value 
         else : return -1 
+
+      trend = trend_now(high , low)
+      if trend == 1 : 
+        extreme_point[4] = np.max( ( high[:4] ))
+        sar_array[4] = extreme_point[4]
+      else:   
+        extreme_point[4] = np.min( ( low[:4] ))
+        sar_array[4] = extreme_point[4]
+      a_factor[n] = start_value 
 
       def afactor_multiplier_downtrend(n ,period,  low,  start_value , max_value, trend ) :
           if trend > 0 : trend = -1
@@ -44,27 +61,24 @@ def parabolic_sar( bar , step_size = None , max_value = None , start_value = Non
               multiplier = round(max_value /  start_value)
           return  multiplier
 
-      trend = 0
       for n in range( period , len(sar_array) ):
-
-          if trend_now(high,  low, close, period, n) == 1  : # Upward trend validity 
+          trend =  trend_direction(high, low, close, sar_array)
+          if trend == 1  :                              # Upward trend validity 
               # high[n-1:n] --> current bar high        # high[n-period] --> n-4 bar high
               multiplier = afactor_multiplier_uptrend(n ,period,  high,  start_value , max_value, trend )
-              extreme_point =  np.max( ( high[n-period:n] ))
-              a_factor = start_value + multiplier * step_size 
-            
-              old_sar = sar_array[n-1]
-              if math.isnan(old_sar):
-                   old_sar = np.min( ( low[n-period:n-1] ))         
-              sar_array[n] =  old_sar + a_factor * (extreme_point - old_sar)
+        
+              extreme_point[n] =  np.max( ( high[n-period:n] ))
+              a_factor[n] = start_value + multiplier * step_size 
+              prior_sar = sar_array[n-1]
+              sar_array[n] =  prior_sar + a_factor[n-1] * (extreme_point[n-1] - prior_sar )
                                                                                       
-          elif trend_now(high,  low, close, period, n) ==  -1  : # Downward trend validity  
+          elif trend ==  -1  : # Downward trend validity  
               
-              multiplier =  afactor_multiplier_downtrend(n ,period,  high,  start_value , max_value, trend )
-              extreme_point = np.min(( low[n-period:n] ))                  
-              a_factor = start_value + multiplier * step_size
-              old_sar = sar_array[n-1]  
-              if math.isnan(old_sar):
-                  old_sar = np.max( ( high[n-period:n-1] ))                                                                            
-              sar_array[n]  =  old_sar - a_factor * (extreme_point - old_sar)                                
-      return sar_array 
+              multiplier =  afactor_multiplier_downtrend(n, period,  high,  start_value , max_value, trend )
+
+              extreme_point[n] = np.min(( low[n-period:n] ))                  
+              a_factor[n] = start_value + multiplier * step_size
+              prior_sar = sar_array[n-1]               
+              sar_array[n]  =  prior_sar  - a_factor[n-1] * (extreme_point[n-1] - prior_sar)                                
+      
+      return sar_array
