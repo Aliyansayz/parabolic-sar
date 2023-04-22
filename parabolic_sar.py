@@ -21,7 +21,7 @@ def parabolic_sar( bar , step_size = None , max_value = None , start_value = Non
 
       def trend_now(high,  low, close, period, n):
         mean =  np.mean( ( high[ n-period:n ] , low[ n-period:n ]  ) )
-        if high[n] > mean : return 1 
+        if close[n] > mean : return 1 
         else : return -1 
 
       def afactor_multiplier_downtrend(n ,period,  low,  start_value , max_value, trend ) :
