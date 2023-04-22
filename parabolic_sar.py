@@ -20,7 +20,7 @@ def parabolic_sar( bar , step_size = None , max_value = None , start_value = Non
       extreme_point = np.full( high.shape , np.nan)
       sar_array = np.full( high.shape , np.nan)
 
-      def trend(high ,  low, period, n):
+      def trend_now(high ,  low, period, n):
         mean =  np.mean( ( high[ n-period:n ] , low[ n-period:n ]  ) )
         if high[n] > mean : return 1 
         else : return -1 
@@ -56,11 +56,11 @@ def parabolic_sar( bar , step_size = None , max_value = None , start_value = Non
       # extreme_point = 
       # sar_array[period-1] = extreme_point
       trend = 0
-      for n in range( period , len(sar_array)+1 ):
+      for n in range( period , len(sar_array) ):
 
-          trend , multiplier = trend(high ,  low, period, n)
+          
 
-          if trend(high ,  low, period, n) == 1  : # Upward trend validity 
+          if trend_now(high ,  low, period, n) == 1  : # Upward trend validity 
               # high[n-1:n] --> current bar high        # high[n-period] --> n-4 bar high
               multiplier = afactor_multiplier_uptrend(n ,period,  high,  start_value , max_value, trend )
         
@@ -76,7 +76,7 @@ def parabolic_sar( bar , step_size = None , max_value = None , start_value = Non
 
               sar_array[n] =  old_sar + a_factor * (extreme_point - old_sar)
                                                                                       
-          elif trend(high ,  low, period, n) ==  -1  : # Downward trend validity  
+          elif trend_now(high ,  low, period, n) ==  -1  : # Downward trend validity  
               
               multiplier =  afactor_multiplier_downtrend(n ,period,  high,  start_value , max_value, trend )
 
