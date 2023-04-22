@@ -11,6 +11,7 @@ def parabolic_sar( bar , step_size = None , max_value = None , start_value = Non
 
       low = np.array( bar.Low , dtype=np.float32)
       high = np.array( bar.High , dtype=np.float32)
+      close = np.array( bar.Close , dtype=np.float32)
       
       period = 5
       sar_array = np.empty_like( high , dtype=np.float16 )
@@ -18,7 +19,7 @@ def parabolic_sar( bar , step_size = None , max_value = None , start_value = Non
       extreme_point = np.full( high.shape , np.nan)
       sar_array = np.full( high.shape , np.nan)
 
-      def trend_now(high ,  low, period, n):
+      def trend_now(high,  low, close, period, n):
         mean =  np.mean( ( high[ n-period:n ] , low[ n-period:n ]  ) )
         if high[n] > mean : return 1 
         else : return -1 
@@ -46,7 +47,7 @@ def parabolic_sar( bar , step_size = None , max_value = None , start_value = Non
       trend = 0
       for n in range( period , len(sar_array) ):
 
-          if trend_now(high ,  low, period, n) == 1  : # Upward trend validity 
+          if trend_now(high,  low, close, period, n) == 1  : # Upward trend validity 
               # high[n-1:n] --> current bar high        # high[n-period] --> n-4 bar high
               multiplier = afactor_multiplier_uptrend(n ,period,  high,  start_value , max_value, trend )
               extreme_point =  np.max( ( high[n-period:n] ))
@@ -59,7 +60,7 @@ def parabolic_sar( bar , step_size = None , max_value = None , start_value = Non
                   old_sar = np.min( ( low[n-period:n-1] ))
               sar_array[n] =  old_sar + a_factor * (extreme_point - old_sar)
                                                                                       
-          elif trend_now(high ,  low, period, n) ==  -1  : # Downward trend validity  
+          elif trend_now(high,  low, close, period, n) ==  -1  : # Downward trend validity  
               
               multiplier =  afactor_multiplier_downtrend(n ,period,  high,  start_value , max_value, trend )
               extreme_point = np.min(( low[n-period:n] ))                  
