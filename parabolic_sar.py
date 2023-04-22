@@ -52,12 +52,10 @@ def parabolic_sar( bar , step_size = None , max_value = None , start_value = Non
               multiplier = afactor_multiplier_uptrend(n ,period,  high,  start_value , max_value, trend )
               extreme_point =  np.max( ( high[n-period:n] ))
               a_factor = start_value + multiplier * step_size 
-              try:
-                  old_sar = sar_array[n-1]
-                  if math.isnan(old_sar):
-                       raise ValueError()
-              except:
-                  old_sar = np.min( ( low[n-period:n-1] ))
+            
+              old_sar = sar_array[n-1]
+              if math.isnan(old_sar):
+                   old_sar = np.min( ( low[n-period:n-1] ))         
               sar_array[n] =  old_sar + a_factor * (extreme_point - old_sar)
                                                                                       
           elif trend_now(high,  low, close, period, n) ==  -1  : # Downward trend validity  
@@ -65,11 +63,8 @@ def parabolic_sar( bar , step_size = None , max_value = None , start_value = Non
               multiplier =  afactor_multiplier_downtrend(n ,period,  high,  start_value , max_value, trend )
               extreme_point = np.min(( low[n-period:n] ))                  
               a_factor = start_value + multiplier * step_size
-              try:
-                  old_sar = sar_array[n-1]  
-                  if math.isnan(old_sar):
-                       raise ValueError()
-              except:
+              old_sar = sar_array[n-1]  
+              if math.isnan(old_sar):
                   old_sar = np.max( ( high[n-period:n-1] ))                                                                            
               sar_array[n]  =  old_sar - a_factor * (extreme_point - old_sar)                                
       return sar_array 
