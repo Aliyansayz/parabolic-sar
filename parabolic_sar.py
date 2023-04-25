@@ -38,7 +38,7 @@ def parabolic_sar( bar , step_size = None ,  start_value = None, max_value = Non
       else:   
         extreme_point[4] = np.min( ( low[:4] ))
         sar_array[4] = extreme_point[4]
-      a_factor[n] = start_value 
+      a_factor[5] = start_value 
 
       def afactor_multiplier_downtrend(n ,period,  low,  start_value , max_value, trend ) :
           if trend >= 0 : trend = -1
