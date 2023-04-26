@@ -13,6 +13,8 @@ def parabolic_sar( bar , step_size = None ,  start_value = None, max_value = Non
       high = np.array( bar.High , dtype=np.float32)
       close = np.array( bar.Close , dtype=np.float32)
       
+      
+      
       period = 5
       sar_array = np.empty_like( high , dtype=np.float16 )
       extreme_point = np.empty_like( high , dtype=np.float16 )
@@ -65,7 +67,7 @@ def parabolic_sar( bar , step_size = None ,  start_value = None, max_value = Non
           multiplier = trend - 1
           if multiplier >  max_value /  start_value :     
               multiplier = round(max_value /  start_value)
-          return  multiplier
+          return  multiplier , trend
 
       for n in range( period , len(sar_array) ):
           direction =  trend_direction(trend, high, low, sar_array, n )
@@ -75,8 +77,8 @@ def parabolic_sar( bar , step_size = None ,  start_value = None, max_value = Non
         
               extreme_point[n] =  np.max( ( high[n-period:n] ))
               a_factor[n] = start_value + multiplier * step_size 
-              prior_sar = sar_array[n-1]
-              sar_array[n] =  prior_sar + a_factor[n-1] * (extreme_point[n-1] - prior_sar )
+              
+              sar_array[n] =  sar_array[n-1] + a_factor[n-1] * (extreme_point[n-1] - sar_array[n-1] )
                                                                                       
           elif direction ==  -1  : # Downward trend validity  
               
@@ -84,7 +86,7 @@ def parabolic_sar( bar , step_size = None ,  start_value = None, max_value = Non
 
               extreme_point[n] = np.min(( low[n-period:n] ))                  
               a_factor[n] = start_value + multiplier * step_size
-              prior_sar = sar_array[n-1]               
-              sar_array[n]  =  prior_sar  - a_factor[n-1] * (extreme_point[n-1] - prior_sar)                                
-      
+                            
+              sar_array[n]  =  sar_array[n-1]  - a_factor[n-1] * (extreme_point[n-1] - sar_array[n-1])
+
       return sar_array 
