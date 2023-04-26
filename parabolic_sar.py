@@ -71,7 +71,7 @@ def parabolic_sar( bar , step_size = None ,  start_value = None, max_value = Non
           direction =  trend_direction(trend, high, low, sar_array, n )
           if direction == 1  :                              # Upward trend validity 
               # high[n-1:n] --> current bar high        # high[n-period] --> n-4 bar high
-              multiplier = afactor_multiplier_uptrend(n ,period,  high,  start_value , max_value, trend )
+              multiplier , trend = afactor_multiplier_uptrend(n ,period,  high,  start_value , max_value, trend )
         
               extreme_point[n] =  np.max( ( high[n-period:n] ))
               a_factor[n] = start_value + multiplier * step_size 
@@ -80,7 +80,7 @@ def parabolic_sar( bar , step_size = None ,  start_value = None, max_value = Non
                                                                                       
           elif direction ==  -1  : # Downward trend validity  
               
-              multiplier =  afactor_multiplier_downtrend(n, period,  high,  start_value , max_value, trend )
+              multiplier , trend =  afactor_multiplier_downtrend(n, period,  high,  start_value , max_value, trend )
 
               extreme_point[n] = np.min(( low[n-period:n] ))                  
               a_factor[n] = start_value + multiplier * step_size
