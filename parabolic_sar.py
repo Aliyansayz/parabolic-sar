@@ -13,8 +13,6 @@ def parabolic_sar( bar , step_size = None ,  start_value = None, max_value = Non
       high = np.array( bar.High , dtype=np.float32)
       close = np.array( bar.Close , dtype=np.float32)
       
-      
-      
       period = 5
       sar_array = np.empty_like( high , dtype=np.float16 )
       extreme_point = np.empty_like( high , dtype=np.float16 )
